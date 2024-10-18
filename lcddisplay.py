@@ -77,8 +77,8 @@ def main():
     lcd_init(bus)
 
     # 文字列を表示
-    text_line1 = args[0]
-    text_line2 = args[1]
+    text_line1 = args[1]
+    text_line2 = args[2]
 
     lcd_set_cursor(bus, 0, 0)
     lcd_print(bus, text_line1)
