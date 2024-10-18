@@ -1,5 +1,6 @@
 import smbus
 import time
+import sys
 
 # LCDの設定
 LCD_ADDR = 0x27  # LCDのI2Cアドレス
@@ -71,12 +72,13 @@ def lcd_print(bus, text):
 
 # メイン処理
 def main():
+    args = sys.argv
     bus = smbus.SMBus(1)
     lcd_init(bus)
 
     # 文字列を表示
-    text_line1 = "Hello, world!"
-    text_line2 = "Raspberry Pi"
+    text_line1 = args[0]
+    text_line2 = args[1]
 
     lcd_set_cursor(bus, 0, 0)
     lcd_print(bus, text_line1)
