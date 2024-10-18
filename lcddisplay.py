@@ -86,7 +86,7 @@ def main():
     lcd_set_cursor(bus, 0, 1)
     lcd_print(bus, text_line2)
 
-    time.sleep(10)  # 10秒間表示を維持
+    # time.sleep(10)  # 10秒間表示を維持
     lcd_send(bus, LCD_CLEAR_DISPLAY, 1)  # 表示をクリア
 
 if __name__ == "__main__":
