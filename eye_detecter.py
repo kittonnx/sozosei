@@ -59,6 +59,8 @@ while True:
         right_eye_ear = calc_ear(right_eye)
         cv2.putText(rgb, "RIGHT eye EAR:{} ".format(round(right_eye_ear, 3)), 
             (10, 120), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
+        
+        
 
         # 両方の目のEARをチェック
         if (left_eye_ear + right_eye_ear) / 2 < EYE_AR_THRESH:
@@ -66,6 +68,8 @@ while True:
                 eyes_closed_start_time = time.time()  # 閉じ始めた時間を記録
             elif time.time() - eyes_closed_start_time >= CLOSED_EYES_TIME_LIMIT:
                 cv2.putText(rgb, "Sleepy eyes. Wake up!", (10, 180), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3, 1)
+            cv2.putText(rgb, "time:{} ".format(time.time()-eyes_closed_start_time), 
+                (10, 140), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
         else:
             eyes_closed_start_time = None  # 目が開いているならリセット
 
