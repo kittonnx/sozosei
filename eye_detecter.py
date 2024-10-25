@@ -10,7 +10,7 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt2.xml')
 face_parts_detector = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 # 閉じているかどうかを判断するしきい値とタイマー変数
-EYE_AR_THRESH = 0.55
+EYE_AR_THRESH = 0.2
 CLOSED_EYES_TIME_LIMIT = 10  # 10秒
 eyes_closed_start_time = None
 
@@ -68,7 +68,7 @@ while True:
                 eyes_closed_start_time = time.time()  # 閉じ始めた時間を記録
             elif time.time() - eyes_closed_start_time >= CLOSED_EYES_TIME_LIMIT:
                 cv2.putText(rgb, "Sleepy eyes. Wake up!", (10, 180), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3, 1)
-            cv2.putText(rgb, "time:{} ".format(time.time()-eyes_closed_start_time), 
+            cv2.putText(rgb, "time:{} ".format(round(time.time()-eyes_closed_start_time,3)), 
                 (10, 140), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
         else:
             eyes_closed_start_time = None  # 目が開いているならリセット
