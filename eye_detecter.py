@@ -10,9 +10,11 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt2.xml')
 face_parts_detector = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 # 閉じているかどうかを判断するしきい値とタイマー変数
-EYE_AR_THRESH = 0.27
+EYE_AR_THRESH = 0.3
 CLOSED_EYES_TIME_LIMIT = 10  # 10秒
+OPEND_EYES_TIME_LIMIT = 5 # 5秒以上目を開けていたらタイマーリセット
 eyes_closed_start_time = None
+eyes_opend_start_time = None
 
 def calc_ear(eye):
     A = distance.euclidean(eye[1], eye[5])
@@ -64,14 +66,22 @@ while True:
 
         # 両方の目のEARをチェック
         if (left_eye_ear + right_eye_ear) / 2 < EYE_AR_THRESH:
+            eyes_opend_start_time = None # 目を少しでも閉じたら
+            
             if eyes_closed_start_time is None:
                 eyes_closed_start_time = time.time()  # 閉じ始めた時間を記録
             elif time.time() - eyes_closed_start_time >= CLOSED_EYES_TIME_LIMIT:
                 cv2.putText(rgb, "Sleepy eyes. Wake up!", (10, 180), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3, 1)
+                
             cv2.putText(rgb, "time:{} ".format(round(time.time()-eyes_closed_start_time,3)), 
                 (10, 140), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
+            
         else:
-            eyes_closed_start_time = None  # 目が開いているならリセット
+            if eyes_opend_start_time is None:
+                eyes_opend_start_time = time.time()
+            elif time.time() - eyes_opend_start_time >= OPEND_EYES_TIME_LIMIT:
+                eyes_closed_start_time = None  # 目が開いているならリセット
+                
 
         cv2.imshow('frame_resize', face_gray_resized)
 
