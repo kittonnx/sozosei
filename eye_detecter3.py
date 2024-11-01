@@ -11,10 +11,12 @@ face_parts_detector = dlib.shape_predictor('shape_predictor_68_face_landmarks.da
 
 # 閉じているかどうかを判断するしきい値とタイマー変数
 EYE_AR_THRESH = 0.235
-CLOSED_EYES_TIME_LIMIT = 10  # 10秒
-OPEND_EYES_TIME_LIMIT = 5 # 5秒以上目を開けていたらタイマーリセット
-eyes_closed_start_time = None
-eyes_opend_start_time = None
+CHECK_TIME = 20
+CLOSE_EYES_TIME_LIMIT = 10
+open_time = 0
+close_time = 0
+before_time = None
+before_eyes_open_state = True
 
 def calc_ear(eye):
     A = distance.euclidean(eye[1], eye[5])
@@ -35,8 +37,10 @@ while True:
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     faces = face_cascade.detectMultiScale(
         gray, scaleFactor=1.11, minNeighbors=3, minSize=(100, 100))
+    
+    now_time = time.time()
 
-    if len(faces) == 1:
+    if len(faces) == 1 and before_time != None:
         x, y, w, h = faces[0, :]
         cv2.rectangle(rgb, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
@@ -62,35 +66,38 @@ while True:
         cv2.putText(rgb, "RIGHT eye EAR:{} ".format(round(right_eye_ear, 3)), 
             (10, 120), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
         
-        
+        # 1f前の情報から目を閉じているor閉じていない時間に加算
+        if before_eyes_open_state:
+            open_time += now_time - before_time
+        else:
+            close_time += now_time - before_time
 
         # 両方の目のEARをチェック
         if (left_eye_ear + right_eye_ear) / 2 < EYE_AR_THRESH:
-            eyes_opend_start_time = None # 目を少しでも閉じたら
-            
-            if eyes_closed_start_time is None:
-                eyes_closed_start_time = time.time()  # 閉じ始めた時間を記録
-            
-            
+            before_eyes_open_state = False            
         else:
-            if eyes_opend_start_time is None:
-                eyes_opend_start_time = time.time()
-            elif time.time() - eyes_opend_start_time >= OPEND_EYES_TIME_LIMIT:
-                eyes_closed_start_time = None  # 目が開いているならリセット
-                
-        # 目を閉じた時間がかかっていたら
-        if time.time() - eyes_closed_start_time >= CLOSED_EYES_TIME_LIMIT:
-            cv2.putText(rgb, "Sleepy eyes. Wake up!", (10, 180), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3, 1)
+            before_eyes_open_state = True
             
-        cv2.putText(rgb, "close_time:{} ".format(round(time.time()-eyes_closed_start_time,3)), 
-                (10, 140), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
-        cv2.putText(rgb, "open_time:{} ".format(round(time.time()-eyes_opend_start_time,3)), 
-                (10, 160), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
-            
-                
-                
-
         cv2.imshow('frame_resize', face_gray_resized)
+        
+    before_time = now_time
+    
+    # 10秒以上目を閉じていたら警告
+    if close_time >= CLOSE_EYES_TIME_LIMIT:
+        cv2.putText(rgb, "Sleepy eyes. Wake up!", (10, 180), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3, 1)
+    
+    # 20秒以上過ぎたらリセットをする
+    if open_time + close_time >= CHECK_TIME:
+        open_time = 0
+        close_time = 0
+        
+    cv2.putText(rgb, "close_time:{} ".format(round(close_time,3)), 
+        (10, 140), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
+    cv2.putText(rgb, "open_time:{} ".format(round(open_time,3)), 
+        (10, 160), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
+    cv2.putText(rgb, "total_time:{} ".format(round(open_time+close_time,3)), 
+        (10, 180), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
+            
 
     fps = cv2.getTickFrequency() / (cv2.getTickCount() - tick)
     cv2.putText(rgb, "FPS:{} ".format(int(fps)), 
