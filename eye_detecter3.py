@@ -79,6 +79,8 @@ while True:
             before_eyes_open_state = True
             
         cv2.imshow('frame_resize', face_gray_resized)
+    else:
+        before_eyes_open_state = False
         
     before_time = now_time
     
