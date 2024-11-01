@@ -54,7 +54,7 @@ while True:
         cv2.putText(rgb, "RIGHT eye EAR:{} ".format(round(right_eye_ear, 3)), 
             (10, 120), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
 
-        if (left_eye_ear + right_eye_ear) < 0.55:
+        if (left_eye_ear + right_eye_ear) < 0.47:
             cv2.putText(rgb,"Sleepy eyes. Wake up!",
                 (10,180), cv2.FONT_HERSHEY_PLAIN, 3, (0,0,255), 3, 1)
 

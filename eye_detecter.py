@@ -10,7 +10,7 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt2.xml')
 face_parts_detector = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 # 閉じているかどうかを判断するしきい値とタイマー変数
-EYE_AR_THRESH = 0.3
+EYE_AR_THRESH = 0.235
 CLOSED_EYES_TIME_LIMIT = 10  # 10秒
 OPEND_EYES_TIME_LIMIT = 5 # 5秒以上目を開けていたらタイマーリセット
 eyes_closed_start_time = None
