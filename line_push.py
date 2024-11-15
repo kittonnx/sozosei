@@ -1,6 +1,14 @@
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 
+from linebot.v3.messaging import (
+    Configuration,
+    ApiClient,
+    MessagingApi,
+    ReplyMessageRequest,
+    TextMessage
+)
+
 # リモートリポジトリに"ご自身のチャネルのアクセストークン"をpushするのは、避けてください。
 # 理由は、そのアクセストークンがあれば、あなたになりすまして、プッシュ通知を送れてしまうからです。
 
