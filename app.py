@@ -100,6 +100,7 @@ def handle_message(event):
                     setting_mode_users.remove(user_id)  # 設定モード解除
             except ValueError:
                 botRes = "時間は HH:MM の形式で入力してください。もう一度勉強スケジュール設定を選択してください。"
+                setting_mode_users.remove(user_id) 
 
         # メッセージの返信
         line_bot_api.reply_message_with_http_info(
@@ -113,7 +114,7 @@ def handle_message(event):
         line_bot_api = MessagingApi(api_client)
         message = "testtesttest"
         # 送信先のユーザーIDに置き換える
-        user_id = "Uc89db96b19d90572c620df0c1e9eac19"
+        # user_id = "Uc89db96b19d90572c620df0c1e9eac19"
         line_bot_api.push_message(
             to=user_id,
             messages=[TextMessage(text=message)]
