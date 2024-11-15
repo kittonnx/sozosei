@@ -54,14 +54,9 @@ def initialize_schedule():
 def send_study_start_message():
     """勉強開始時刻のメッセージを送信"""
     line_bot_api = LineBotApi(token)
-    message = "勉強開始時刻です。今日も勉強頑張ろう！"
-    # 送信先のユーザーIDに置き換える
     user_id = "Uc89db96b19d90572c620df0c1e9eac19"
-    line_bot_api.push_message(
-        to=user_id,
-        messages=[TextSendMessage(text=message)]
-    )
-    print(f"メッセージを送信しました: {message}")
+    message = "勉強開始時刻です。今日も勉強頑張ろう！"
+    line_bot_api.push_message(user_id, messages=[TextSendMessage(text=message)])
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -113,12 +108,6 @@ def handle_message(event):
                 messages=[TextMessage(text=botRes)]
             )
         )
-        
-    """勉強開始時刻のメッセージを送信"""
-    line_bot_api = LineBotApi(token)
-    user_id = "Uc89db96b19d90572c620df0c1e9eac19"
-    message = "勉強開始時刻です。今日も勉強頑張ろう！"
-    line_bot_api.push_message(user_id, messages=[TextSendMessage(text=message)])
         
 
 def schedule_runner():
