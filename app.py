@@ -99,7 +99,7 @@ def handle_message(event):
                     botRes = f"勉強開始時刻を {lineRes} に設定しました！"
                     setting_mode_users.remove(user_id)  # 設定モード解除
             except ValueError:
-                botRes = "時間は HH:MM の形式で入力してください。"
+                botRes = "時間は HH:MM の形式で入力してください。もう一度勉強スケジュール設定を選択してください。"+user_id
 
         # メッセージの返信
         line_bot_api.reply_message_with_http_info(
