@@ -112,16 +112,15 @@ def handle_message(event):
             )
         )
         
-    with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
-        message = "testtesttest"
-        # 送信先のユーザーIDに置き換える
-        # user_id = "Uc89db96b19d90572c620df0c1e9eac19"
-        line_bot_api.push_message(
-            to=user_id,
-            messages=[TextMessage(text=message)]
-        )
-        
+    """勉強開始時刻のメッセージを送信"""
+    line_bot_api = LineBotApi(access_token)
+    message = "勉強開始時刻です。今日も勉強頑張ろう！"
+    # 送信先のユーザーIDに置き換える
+    user_id = "Uc89db96b19d90572c620df0c1e9eac19"
+    line_bot_api.push_message(
+        to=user_id,
+        messages=[TextMessage(text=message)]
+    )
         
 
 def schedule_runner():
