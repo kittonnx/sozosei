@@ -52,7 +52,7 @@ def send_study_start_message():
         line_bot_api = MessagingApi(api_client)
         message = "勉強開始時刻です。今日も勉強頑張ろう！"
         # 送信先のユーザーIDに置き換える
-        user_id = "USER_ID"
+        user_id = "Uc89db96b19d90572c620df0c1e9eac19"
         line_bot_api.push_message(
             to=user_id,
             messages=[TextMessage(text=message)]
@@ -99,7 +99,7 @@ def handle_message(event):
                     botRes = f"勉強開始時刻を {lineRes} に設定しました！"
                     setting_mode_users.remove(user_id)  # 設定モード解除
             except ValueError:
-                botRes = "時間は HH:MM の形式で入力してください。もう一度勉強スケジュール設定を選択してください。"+user_id
+                botRes = "時間は HH:MM の形式で入力してください。もう一度勉強スケジュール設定を選択してください。"
 
         # メッセージの返信
         line_bot_api.reply_message_with_http_info(
