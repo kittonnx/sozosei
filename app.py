@@ -108,6 +108,18 @@ def handle_message(event):
                 messages=[TextMessage(text=botRes)]
             )
         )
+        
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        message = "testtesttest"
+        # 送信先のユーザーIDに置き換える
+        user_id = "Uc89db96b19d90572c620df0c1e9eac19"
+        line_bot_api.push_message(
+            to=user_id,
+            messages=[TextMessage(text=message)]
+        )
+        
+        
 
 def schedule_runner():
     """スケジューラーの実行ループ"""
