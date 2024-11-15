@@ -109,8 +109,6 @@ def handle_message(event):
             )
         )
         
-        send_study_start_message()
-        
 
 def schedule_runner():
     """スケジューラーの実行ループ"""
