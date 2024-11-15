@@ -3,6 +3,7 @@ import threading
 import schedule
 import time
 from flask import Flask, request, abort
+from linebot import LineBotApi
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.messaging import (
@@ -17,6 +18,8 @@ from linebot.v3.webhooks import MessageEvent, TextMessageContent
 app = Flask(__name__)
 
 # LINE Bot設定
+access_token='17bVejREkwYGguGq300UUUEntbsxM3D1QW80/pKRA3QF3sH7twBwIqIkXB5Qsj3ZanbG+YHOflf2iPLwfyxGiZXEwJXWTeXmarUPttBXjoG9odTJ/0sTo8SAelxU6kHPn6qyBq0P7ZvcWEX8ddWXXwdB04t89/1O/w1cDnyilFU='
+
 configuration = Configuration(access_token='17bVejREkwYGguGq300UUUEntbsxM3D1QW80/pKRA3QF3sH7twBwIqIkXB5Qsj3ZanbG+YHOflf2iPLwfyxGiZXEwJXWTeXmarUPttBXjoG9odTJ/0sTo8SAelxU6kHPn6qyBq0P7ZvcWEX8ddWXXwdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('17221b84038708c34cb1a47ae5032623')
 SCHEDULE_FILE = "schedule.json"
@@ -48,16 +51,15 @@ def initialize_schedule():
 
 def send_study_start_message():
     """勉強開始時刻のメッセージを送信"""
-    with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
-        message = "勉強開始時刻です。今日も勉強頑張ろう！"
-        # 送信先のユーザーIDに置き換える
-        user_id = "Uc89db96b19d90572c620df0c1e9eac19"
-        line_bot_api.push_message(
-            to=user_id,
-            messages=[TextMessage(text=message)]
-        )
-        print(f"メッセージを送信しました: {message}")
+    line_bot_api = LineBotApi(access_token)
+    message = "勉強開始時刻です。今日も勉強頑張ろう！"
+    # 送信先のユーザーIDに置き換える
+    user_id = "Uc89db96b19d90572c620df0c1e9eac19"
+    line_bot_api.push_message(
+        to=user_id,
+        messages=[TextMessage(text=message)]
+    )
+    print(f"メッセージを送信しました: {message}")
 
 @app.route("/callback", methods=['POST'])
 def callback():

@@ -17,6 +17,8 @@ from linebot.v3.webhooks import MessageEvent, TextMessageContent
 app = Flask(__name__)
 
 # LINE Bot設定
+access_token='17bVejREkwYGguGq300UUUEntbsxM3D1QW80/pKRA3QF3sH7twBwIqIkXB5Qsj3ZanbG+YHOflf2iPLwfyxGiZXEwJXWTeXmarUPttBXjoG9odTJ/0sTo8SAelxU6kHPn6qyBq0P7ZvcWEX8ddWXXwdB04t89/1O/w1cDnyilFU='
+
 configuration = Configuration(access_token='17bVejREkwYGguGq300UUUEntbsxM3D1QW80/pKRA3QF3sH7twBwIqIkXB5Qsj3ZanbG+YHOflf2iPLwfyxGiZXEwJXWTeXmarUPttBXjoG9odTJ/0sTo8SAelxU6kHPn6qyBq0P7ZvcWEX8ddWXXwdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('17221b84038708c34cb1a47ae5032623')
 SCHEDULE_FILE = "schedule.json"
@@ -51,7 +53,7 @@ def initialize_schedule():
 
 def send_study_start_message():
     """勉強開始時刻のメッセージを送信"""
-    with ApiClient(configuration) as api_client:
+    with ApiClient(access_token) as api_client:
         line_bot_api = MessagingApi(api_client)
         message = "勉強開始時刻です。今日も勉強頑張ろう！"
         # 送信先のユーザーIDに置き換える
