@@ -23,7 +23,7 @@ SCHEDULE_FILE = "schedule.json"
 
 # スケジュール用のグローバル変数
 scheduling_lock = threading.Lock()
-setting_mode_users = set()  # スケジュール設定モードのユーザーIDを格納
+
 
 def load_schedule():
     """JSONファイルからスケジュールを読み込み"""
@@ -33,10 +33,12 @@ def load_schedule():
     except (FileNotFoundError, json.JSONDecodeError):
         return {"study_time": None}
 
+
 def save_schedule(schedule_data):
     """スケジュールをJSONファイルに保存"""
     with open(SCHEDULE_FILE, "w") as file:
         json.dump(schedule_data, file, indent=4)
+
 
 def initialize_schedule():
     """スケジュールをセットアップ"""
@@ -45,6 +47,7 @@ def initialize_schedule():
     time_str = data.get("study_time")
     if time_str:
         schedule.every().day.at(time_str).do(send_study_start_message)
+
 
 def send_study_start_message():
     """勉強開始時刻のメッセージを送信"""
@@ -58,6 +61,7 @@ def send_study_start_message():
             messages=[TextMessage(text=message)]
         )
         print(f"メッセージを送信しました: {message}")
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -73,35 +77,29 @@ def callback():
 
     return 'OK'
 
+
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     """ユーザーのメッセージを処理し、勉強開始時刻を更新"""
-    user_id = event.source.user_id
-    lineRes = event.message.text.strip()
-    botRes = ""
-
     with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
+        lineRes = event.message.text.strip()
+        botRes = ""
 
-        # スケジュール設定モードのチェック
-        if lineRes == "勉強スケジュール設定":
-            setting_mode_users.add(user_id)
-            botRes = "勉強スケジュール時刻を設定します。HH:MMの形式で入力してください。"
-        elif user_id in setting_mode_users:
+        # 勉強開始時刻の追加処理
+        if lineRes.startswith("勉強開始:"):
+            new_time = lineRes.split(":", 1)[1].strip()
             try:
-                # 時刻が正しい形式か確認
-                time.strptime(lineRes, "%H:%M")
+                time.strptime(new_time, "%H:%M")  # 時間形式の確認
                 with scheduling_lock:
                     # 新しいスケジュールに上書き
-                    data = {"study_time": lineRes}
+                    data = {"study_time": new_time}
                     save_schedule(data)
                     initialize_schedule()
-                    botRes = f"勉強開始時刻を {lineRes} に設定しました！"
-                    setting_mode_users.remove(user_id)  # 設定モード解除
+                    botRes = f"勉強開始時刻を {new_time} に設定しました！"
             except ValueError:
                 botRes = "時間は HH:MM の形式で入力してください。"
 
-        # メッセージの返信
+        line_bot_api = MessagingApi(api_client)
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
@@ -109,11 +107,13 @@ def handle_message(event):
             )
         )
 
+
 def schedule_runner():
     """スケジューラーの実行ループ"""
     while True:
         schedule.run_pending()
         time.sleep(1)
+
 
 if __name__ == "__main__":
     # スケジュール初期化
