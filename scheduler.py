@@ -25,9 +25,9 @@ def load_schedule_from_file(filename="schedule.json"):
 
 def set_schedule(new_time):
     """スケジュールを設定"""
-    schedule.clear()
+    scheduler.clear()
     if new_time:
-        schedule.every().day.at(new_time).do(run_task)
+        scheduler.every().day.at(new_time).do(run_task)
         print(f"スケジュールが {new_time} に設定されました！")
     else:
         print("スケジュール時間が設定されていません。")
@@ -45,5 +45,5 @@ while True:
         set_schedule(current_time)
 
     # タスクを実行
-    schedule.run_pending()
+    scheduler.run_pending()
     time.sleep(5)
