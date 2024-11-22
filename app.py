@@ -3,8 +3,7 @@ import threading
 import schedule
 import time
 from flask import Flask, request, abort
-from linebot import LineBotApi
-from linebot.models import TextSendMessage
+
 
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
@@ -32,33 +31,11 @@ scheduling_lock = threading.Lock()
 setting_mode_users = set()  # スケジュール設定モードのユーザーIDを格納
 scheduler_running = True  # スレッドの実行状態を制御するフラグ
 
-def load_schedule():
-    """JSONファイルからスケジュールを読み込み"""
-    try:
-        with open(SCHEDULE_FILE, "r") as file:
-            return json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {"study_time": None}
-
 def save_schedule(schedule_data):
     """スケジュールをJSONファイルに保存"""
     with open(SCHEDULE_FILE, "w") as file:
         json.dump(schedule_data, file, indent=4)
 
-def initialize_schedule():
-    """スケジュールをセットアップ"""
-    schedule.clear()
-    data = load_schedule()
-    time_str = data.get("study_time")
-    if time_str:
-        schedule.every().day.at(time_str).do(send_study_start_message)
-
-def send_study_start_message():
-    """勉強開始時刻のメッセージを送信"""
-    line_bot_api = LineBotApi(token)
-    message = "勉強開始時刻です。今日も勉強頑張ろう！"
-    user_id = "Uc89db96b19d90572c620df0c1e9eac19"
-    line_bot_api.push_message(user_id, messages=[TextSendMessage(text=message)])
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -96,7 +73,6 @@ def handle_message(event):
                     # 新しいスケジュールに上書き
                     data = {"study_time": lineRes}
                     save_schedule(data)
-                    initialize_schedule()
                     botRes = f"勉強開始時刻を {lineRes} に設定しました！"
                     setting_mode_users.remove(user_id)  # 設定モード解除
             except ValueError:
@@ -111,32 +87,5 @@ def handle_message(event):
             )
         )
 
-def schedule_runner():
-    """スケジューラーの実行ループ"""
-    while scheduler_running:  # フラグを監視
-        schedule.run_pending()
-        time.sleep(1)
-
-def stop_scheduler(signal_num, frame):
-    """スケジューラーを停止"""
-    global scheduler_running
-    print("Stopping scheduler...")
-    scheduler_running = False
-
 if __name__ == "__main__":
-    # スケジュール初期化
-    initialize_schedule()
-
-    # シグナルハンドラー設定（Ctrl+Cでスケジュール停止）
-    signal.signal(signal.SIGINT, stop_scheduler)
-    signal.signal(signal.SIGTERM, stop_scheduler)
-
-    # スケジューラーを別スレッドで実行
-    scheduler_thread = threading.Thread(target=schedule_runner, daemon=True)
-    scheduler_thread.start()
-
-    try:
-        # Flaskアプリの起動
-        app.run()
-    finally:
-        stop_scheduler(None, None)  # アプリ終了時にスケジューラー停止
+    app.run()
