@@ -12,7 +12,7 @@ face_parts_detector = dlib.shape_predictor('shape_predictor_68_face_landmarks.da
 # 閉じているかどうかを判断するしきい値とタイマー変数
 EYE_AR_THRESH = 0.235
 CHECK_TIME = 20
-CLOSE_EYES_TIME_LIMIT = 10
+CLOSE_EYES_TIME_LIMIT = 15
 open_time = 0
 close_time = 0
 before_time = None
@@ -80,11 +80,17 @@ while True:
             
         cv2.imshow('frame_resize', face_gray_resized)
     else:
+        # 1f前の情報から目を閉じているor閉じていない時間に加算
+        if before_eyes_open_state:
+            open_time += now_time - before_time
+        else:
+            close_time += now_time - before_time
+        
         before_eyes_open_state = False
         
     before_time = now_time
     
-    # 10秒以上目を閉じていたら警告
+    # 15秒以上目が開かれていないとき警告
     if close_time >= CLOSE_EYES_TIME_LIMIT:
         cv2.putText(rgb, "Sleepy eyes. Wake up!", (10, 180), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3, 1)
     
