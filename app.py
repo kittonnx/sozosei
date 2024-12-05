@@ -62,6 +62,7 @@ def handle_message(event):
     user_id = event.source.user_id
     lineRes = event.message.text.strip()
     botRes = ""
+    global light_flg
 
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
