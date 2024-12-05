@@ -4,6 +4,9 @@ import schedule
 import time
 from flask import Flask, request, abort
 
+import power_on
+import power_off
+
 
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
@@ -30,6 +33,8 @@ SCHEDULE_FILE = "schedule.json"
 scheduling_lock = threading.Lock()
 setting_mode_users = set()  # スケジュール設定モードのユーザーIDを格納
 scheduler_running = True  # スレッドの実行状態を制御するフラグ
+
+light_flg = False
 
 def save_schedule(schedule_data):
     """スケジュールをJSONファイルに保存"""
@@ -65,6 +70,15 @@ def handle_message(event):
         if lineRes == "勉強スケジュール設定":
             setting_mode_users.add(user_id)
             botRes = "勉強スケジュール時刻を設定します。HH:MMの形式で入力してください。"
+        elif lineRes == "点灯":
+            if light_flg:
+                power_off.power_off()
+                light_flg = False
+            else:
+                power_on.power_on()
+                light_flg = True
+            
+            
         elif user_id in setting_mode_users:
             try:
                 # 時刻が正しい形式か確認
