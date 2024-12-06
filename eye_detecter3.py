@@ -30,6 +30,7 @@ while True:
     tick = cv2.getTickCount()
 
     ret, rgb = cap.read()
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     faces = face_cascade.detectMultiScale(
         gray, scaleFactor=1.11, minNeighbors=3, minSize=(100, 100))
     
