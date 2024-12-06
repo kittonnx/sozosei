@@ -79,7 +79,7 @@ while True:
             before_eyes_open_state = True
             
         cv2.imshow('frame_resize', face_gray_resized)
-    else:
+    elif before_time != None:
         # 1f前の情報から目を閉じているor閉じていない時間に加算
         if before_eyes_open_state:
             open_time += now_time - before_time
